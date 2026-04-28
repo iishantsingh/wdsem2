@@ -47,24 +47,57 @@
 
 
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from "../css/Sample.module.css"
 import NavStyle from "../css/NavBar.module.css"
 // import styled from "styled-components"
 import styled from "@emotion/styled"
 import { css } from '@emotion/react'
+import axios from "axios"
 
 function Sample() {
   // let count=0
   const [count, setCount]=useState(0)
-  const[name, setName]= useState("Ishant")
-  
+  const[name, setName]= useState("Devendra")
+  const [loading, setLoading]=useState(false)
+  const inputRef = useRef(null)
+
   useEffect(()=>{
     console.log("Component is mounted")
-    return()=>{
-      console.log("Component unmounted")
-    },[name])
+    inputRef.current.focus()
+    return () => {
+      console.log("Component unmount")
+    }
+  },[name])
 
+  useEffect(()=>{
+    // const fetchData = async() => {
+    //   try{
+    //     const response = await fetch("https://jsonplaceholder.typicode.com/todos/500",{
+    //       method: "GET"
+    //     })
+    //     const json = await response.json()
+    //     console.log(json)
+    //   }catch(e){
+    //     console.log(e)
+    //   }
+    // }
+
+    const fetchData = async() => {
+      try{
+        setLoading(true)
+        const response = await axios.get("https://jsonplaceholder.typicode.com/todos/5")
+        console.log(response.data)
+        setLoading(false)
+      }catch(e){
+        
+          console.log(e)
+      }
+    }
+
+    fetchData()
+  },[])
+  
   const increment = () => {
        setCount(count + 1)
     }
@@ -76,8 +109,14 @@ function Sample() {
     <div>
       <h1>This is a sample component</h1>
       <h2>{count}</h2>
+      <h3>{name}</h3>
+      {loading?<h2>Loading...</h2>:""}
+      <input type='text' ref={inputRef} placeholder='Enter the value' />
+      <button onClick={()=>{inputRef.current.value="Alex"}}>Fill the text</button>
+      <button onClick={()=>setName("Alex")}>Change the Name</button>
       <button css={funcButton} onClick={increment}>Increment</button>
       <Button danger onClick={decrement}>decrement</Button>
+      <button className='bg-blue-600 text-white w-18'>Sample </button>
     </div>
   )
 }
@@ -97,4 +136,4 @@ const Button=styled.button`
     width: 100px;
     height: 30px;
     border-radius: 10px;
-  ` 
+  `
